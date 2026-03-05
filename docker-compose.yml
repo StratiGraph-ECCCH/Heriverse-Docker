@@ -1,0 +1,101 @@
+services:
+  nginx:
+    image: nginx:stable
+    container_name: nginx
+    ports:
+      - "443:443"
+    volumes:
+      - ./mount/nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./mount/nginx/certs:/etc/nginx/certs:ro
+    depends_on:
+      - heriverse
+      - heriverse-server
+      - keycloak  
+    networks:
+      - backend
+
+  # =======================
+  # FRONTEND
+  # =======================
+  heriverse:
+    image: git.3dresearch.it:5050/cnr-h2iosc/heriverse/heriverse-wapp:34ac7a12
+    container_name: heriverse
+    ports:
+      - "8081:8080"
+    depends_on:
+      - heriverse-server
+      - keycloak
+    volumes:
+      - ./mount/heriverse/config/Utils.js:/aton/wapps/heriverse/config/Utils.js
+    networks:
+      - backend
+
+  # =======================
+  # BACKEND / API SERVER
+  # =======================
+  heriverse-server:
+    image: git.3dresearch.it:5050/stratigraph/heriverse-server:8a09200e
+    container_name: heriverse-server
+    ports:
+      - "3000:3000"
+    depends_on:
+      - couchdb
+      - keycloak
+    volumes:
+      - ./mount/server/uploads:/app/uploads
+      - ./mount/server/config:/app/conf
+    networks:
+      - backend
+  # =======================
+  # DATABASE
+  # =======================
+  couchdb:
+    image: apache/couchdb:3
+    container_name: couchdb
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=admin
+      - COUCHDB_SECRET=heriversesecret
+      - COUCHDB_SINGLE_NODE=true
+    ports:
+      - "5984:5984"
+    volumes:
+      - couchdb_data:/opt/couchdb/data
+    networks:
+      - backend
+ 
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0.4
+    container_name: keycloak
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: dev-file
+      KC_PROXY: edge
+      KC_HTTP_ENABLED: "true"
+      KC_HOSTNAME_STRICT: "false"
+      KC_HOSTNAME_STRICT_HTTPS: "false"
+    command:
+      - start-dev
+      - --import-realm
+      - --http-relative-path=/auth
+      - --proxy-headers=xforwarded
+      - --hostname=localhost
+      - --hostname-strict=false
+      - --hostname-strict-https=false
+      - --http-enabled=true
+    volumes:
+      - keycloak_data:/opt/keycloak/data
+      - ./mount/keycloak/realms/realm-heriverse.json:/opt/keycloak/data/import/realm-heriverse.json
+    networks:
+      - backend
+# =======================
+# RETE E VOLUMI
+# =======================
+networks:
+  backend:
+    driver: bridge
+
+volumes:
+  couchdb_data:
+  keycloak_data:

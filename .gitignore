@@ -1,0 +1,5 @@
+mount/nginx/certs/*
+!mount/nginx/certs/.gitkeep
+
+mount/server/uploads/*
+!mount/server/uploads/.gitkeep
