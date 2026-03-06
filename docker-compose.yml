@@ -18,7 +18,7 @@ services:
   # FRONTEND
   # =======================
   heriverse:
-    image: git.3dresearch.it:5050/cnr-h2iosc/heriverse/heriverse-wapp:34ac7a12
+    image: git.3dresearch.it:5050/cnr-h2iosc/heriverse/heriverse-wapp:latest
     container_name: heriverse
     ports:
       - "8081:8080"
@@ -34,7 +34,7 @@ services:
   # BACKEND / API SERVER
   # =======================
   heriverse-server:
-    image: git.3dresearch.it:5050/stratigraph/heriverse-server:8a09200e
+    image: git.3dresearch.it:5050/stratigraph/heriverse-server:latest
     container_name: heriverse-server
     ports:
       - "3000:3000"
