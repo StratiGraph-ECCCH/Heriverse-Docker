@@ -3,3 +3,6 @@ mount/nginx/certs/*
 
 mount/server/uploads/*
 !mount/server/uploads/.gitkeep
+
+mount/heriverse/config/Utils.js
+mount/server/config/.env
