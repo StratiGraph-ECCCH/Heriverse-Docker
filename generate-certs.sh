@@ -2,7 +2,7 @@
 
 set -e
 
-CERT_DIR="./mount/nginx/certs"
+CERT_DIR="./mount/certs"
 DOMAIN="localhost"
 
 mkdir -p "$CERT_DIR"

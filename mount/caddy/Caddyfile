@@ -1,0 +1,26 @@
+localhost {
+    tls /certs/localhost.crt /certs/localhost.key
+
+    # Redirect interno opzionale
+    #redir / /a/heriverse 302
+
+    request_body {
+        max_size 3GB
+    }
+
+    handle_path /server/* {
+        reverse_proxy heriverse-server:3000
+    }
+
+    handle /auth* {
+        reverse_proxy keycloak:8080
+    }
+
+    handle_path /couchdb/* {
+        reverse_proxy couchdb:5984
+    }
+
+    handle /* {
+        reverse_proxy heriverse:8080
+    }
+}

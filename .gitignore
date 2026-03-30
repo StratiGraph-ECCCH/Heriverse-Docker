@@ -1,8 +1,8 @@
-mount/nginx/certs/*
-!mount/nginx/certs/.gitkeep
-
 mount/server/uploads/*
 !mount/server/uploads/.gitkeep
 
 mount/heriverse/config/Utils.js
 mount/server/config/.env
+
+mount/certs/*
+!mount/certs/.gitkeep

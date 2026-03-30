@@ -110,8 +110,8 @@ If the script fails, run this command in the terminal:
 mkdir -p certs && \
 openssl req -x509 -nodes -days 365 \
   -newkey rsa:2048 \
-  -keyout mount/nginx/certs/localhost.key \
-  -out mount/nginx/certs/localhost.crt \
+  -keyout mount/certs/localhost.key \
+  -out mount/certs/localhost.crt \
   -subj "/C=IT/ST=Local/L=Local/O=Dev/OU=Dev/CN=localhost"
 ```
 
