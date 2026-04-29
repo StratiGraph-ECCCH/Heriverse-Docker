@@ -117,7 +117,7 @@ openssl req -x509 -nodes -days 365 \
 
 ### Run this command to start Docker
 ```bash
-docker-compose up --build -d
+docker-compose up -d
 ```
 ### To set up CouchDB:
 Run the script:
