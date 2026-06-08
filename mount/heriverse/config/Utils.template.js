@@ -1,12 +1,16 @@
 "use strict";
+
 let Utils = {};
 window.Utils = Utils;
-Utils.baseName = "https://localhost/";
+
+Utils.baseName = "$BASE_NAME";
 
 Utils.host = Utils.baseName + "server/heriverse/";
 Utils.baseHost = Utils.baseName + "server/heriverse/";
 Utils.baseUrl = Utils.baseName + "a/heriverse";
-Utils.clientId = "heriverse";
-Utils.loginUrl = Utils.baseName + "auth/realms/heriverse/protocol/openid-connect/auth";
+
+Utils.clientId = "$CLIENT_ID";
+
+Utils.loginUrl = "$LOGIN_URL";
 
 export default Utils;

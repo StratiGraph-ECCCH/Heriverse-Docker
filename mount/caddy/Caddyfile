@@ -1,26 +1,37 @@
-localhost {
-    tls /certs/localhost.crt /certs/localhost.key
+{$HOSTNAME}:{$CADDY_PORT} {
+	tls /certs/localhost.crt /certs/localhost.key
+
 
     # Redirect interno opzionale
     #redir / /a/heriverse 302
 
     request_body {
-        max_size 3GB
+        max_size {$MAX_BODY_SIZE}
     }
 
     handle_path /server/* {
-        reverse_proxy heriverse-server:3000
+        reverse_proxy {$SERVER_HOST}:{$SERVER_PORT}
     }
 
     handle /auth* {
-        reverse_proxy keycloak:8080
+        reverse_proxy {$KEYCLOAK_HOST}:{$KEYCLOAK_PORT}
     }
 
     handle_path /couchdb/* {
-        reverse_proxy couchdb:5984
+        reverse_proxy {$COUCHDB_HOST}:{$COUCHDB_PORT}
     }
 
+      handle_path /minio/* {
+    reverse_proxy {$S3_HOST}:{$S3_PORT}
+  }
+
+  handle_path /minio-console/* {
+    reverse_proxy {$S3_HOST}:{$S3_CONSOLE_PORT}
+  }
+
     handle /* {
-        reverse_proxy heriverse:8080
+        reverse_proxy {$FRONTEND_HOST}:{$FRONTEND_PORT}
     }
+
+
 }
