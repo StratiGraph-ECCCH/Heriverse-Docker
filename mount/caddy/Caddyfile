@@ -21,13 +21,15 @@
         reverse_proxy {$COUCHDB_HOST}:{$COUCHDB_PORT}
     }
 
-      handle_path /minio/* {
-    reverse_proxy {$S3_HOST}:{$S3_PORT}
-  }
+    # Object store (RustFS): API S3 sotto /s3/ (vedi S3_PUBLIC_BASE_URL in .env)
+    handle_path /s3/* {
+        reverse_proxy {$S3_HOST}:{$S3_PORT}
+    }
 
-  handle_path /minio-console/* {
-    reverse_proxy {$S3_HOST}:{$S3_CONSOLE_PORT}
-  }
+    # Console di RustFS (servita da RustFS sotto /rustfs/console/)
+    handle_path /s3-console/* {
+        reverse_proxy {$S3_HOST}:{$S3_CONSOLE_PORT}
+    }
 
     handle /* {
         reverse_proxy {$FRONTEND_HOST}:{$FRONTEND_PORT}

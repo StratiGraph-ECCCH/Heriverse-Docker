@@ -144,25 +144,43 @@ services:
       - backend
     restart: always
 
-  minio:
-    image: minio/minio:latest
-    container_name: minio
+  # =======================
+  # OBJECT STORE (RustFS, Apache-2.0 — S3 API)
+  # =======================
+  # Le credenziali sono le STESSE variabili S3_* che legge heriverse-server:
+  # un solo nome per una sola chiave. Il bucket lo crea heriverse-server
+  # (S3_AUTO_CREATE_BUCKET, default true), quindi niente one-shot qui.
+  rustfs:
+    # Pinnata, con il digest accanto: un tag mobile cambia sotto i piedi.
+    image: rustfs/rustfs:1.0.2  # sha256:7e948dad4748bda48f8985fda7195f8cf2e4259427011f6120acc2c9acf51587
+    container_name: rustfs
 
     restart: always
 
     ports:
-      - "${S3_PORT}:9000"   # API S3
-      - "${S3_CONSOLE_PORT}:9001"   # Console Web
+      - "${S3_PORT}:${S3_PORT}"   # API S3
+      - "${S3_CONSOLE_PORT}:${S3_CONSOLE_PORT}"   # Console Web (/rustfs/console/)
 
     environment:
-      MINIO_ROOT_USER: ${S3_ACCESS_KEY_ID}
-      MINIO_ROOT_PASSWORD: ${S3_SECRET_ACCESS_KEY}
+      RUSTFS_VOLUMES: "/data"
+      RUSTFS_ADDRESS: "0.0.0.0:${S3_PORT}"
+      RUSTFS_CONSOLE_ENABLE: "true"
+      RUSTFS_CONSOLE_ADDRESS: "0.0.0.0:${S3_CONSOLE_PORT}"
+      RUSTFS_ACCESS_KEY: ${S3_ACCESS_KEY_ID}
+      RUSTFS_SECRET_KEY: ${S3_SECRET_ACCESS_KEY}
+    healthcheck:
+      # l'endpoint di salute, non solo la porta; curl è nell'immagine
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:${S3_PORT}/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
     networks:
       - backend
     volumes:
-      - minio_data:/data
+      # Volume NUOVO: il formato su disco cambia da un server S3 all'altro.
+      # L'immagine gira come uid 10001 e la sua /data è già di 10001.
+      - rustfs_data:/data
 
-    command: server /data --console-address ":${S3_CONSOLE_PORT}"
 # =======================
 # RETE E VOLUMI
 # =======================
@@ -175,4 +193,4 @@ volumes:
   couchdb_config:
   postgres_data:
   keycloak_data:
-  minio_data:
+  rustfs_data:
